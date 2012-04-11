@@ -142,11 +142,25 @@ location #{app_url.path} {
     end
   end
 
+  desc 'Tell NewRelic about this deployment'
+  task :tell_newrelic => :environment do
+    require 'new_relic/command'
+    require 'new_relic/commands/deployments'
+
+    version = if defined? Version
+      Version.current
+    else
+      `git log -1 --format=%h`.chomp # abbreviated hash of latest git commit
+    end
+
+    NewRelic::Command::Deployments.new :revision => version
+  end
+
   desc 'Run all setup tasks'
   task :post_setup => [:create_db, :create_user, :prepare_logs, :prepare_tmp, :prepare_public, :setup_webserver, :setup_solr] 
 
   desc 'Run all deployment tasks'
-  task :post_deploy => [:migrate_db, :reindex_solr, :precompile_assets, :restart_app]
+  task :post_deploy => [:migrate_db, :reindex_solr, :precompile_assets, :tell_newrelic, :restart_app]
 
   private
   def web_root_dir
