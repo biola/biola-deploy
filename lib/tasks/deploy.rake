@@ -99,7 +99,7 @@ location #{app_url.path} {
       password = db_config['password']
 
       client.query 'USE mysql'
-      client.query "CREATE DATABASE #{db}"
+      client.query "CREATE DATABASE IF NOT EXISTS #{db}"
       client.query "GRANT ALL PRIVILEGES ON #{db}.* TO '#{user}'@'%' IDENTIFIED BY '#{password}'"
     end
   end
