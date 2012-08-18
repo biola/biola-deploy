@@ -62,8 +62,10 @@ server {
 
  location / {
   root                    #{app_public_dir};
-  passenger_set_cgi_param HTTP_X_FORWARDED_PROTO $scheme;
   passenger_enabled       on;
+  passenger_set_cgi_param HTTP_X_FORWARDED_PROTO $scheme;
+  passenger_user          #{app_username};
+  passenger_group         #{app_username};
  }
 }
 "
