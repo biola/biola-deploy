@@ -35,7 +35,7 @@ namespace :deploy do
     Dir.chdir(app_dir) do
       Dir.mkdir('tmp') unless Dir.exists?('tmp')
       make_globally_writable 'tmp'
-      chown_to_app_user 'public'
+      chown_to_app_user 'tmp'
     end
   end
 
