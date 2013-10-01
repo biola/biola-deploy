@@ -8,9 +8,9 @@ spec = Gem::Specification.new do |s|
   s.version = BiolaDeploy::VERSION
   s.summary = 'Easy deployment for Rails applications'
   s.description = 'Designed to automate deployment of Rails applications using rake tasks'
-  s.files = Dir['lib/**/*.rb', 'lib/tasks/*.rake']
+  s.files = Dir['README.*', 'MIT-LICENSE', 'lib/**/*.rb', 'lib/tasks/*.rake']
   s.require_path = 'lib'
   s.author = 'Adam Crownoble'
   s.email = 'adam.crownoble@biola.edu'
-  s.homepage = 'https://bitbucket.org/biola/biola-deploy'
+  s.homepage = 'https://github.com/biola/biola-deploy'
 end
