@@ -49,9 +49,6 @@ namespace :deploy do
     end
   end
 
-  desc 'Run all deployment tasks'
-  task :post_deploy => [:migrate_db, :reindex_solr, :precompile_assets, :tell_newrelic, :restart_app]
-
   private
 
   def app_dir
