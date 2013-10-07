@@ -26,8 +26,8 @@ namespace :deploy do
 
   desc 'Tell NewRelic about this deployment'
   task :tell_newrelic => :environment do
-    require 'new_relic/command'
-    require 'new_relic/commands/deployments'
+    require 'new_relic/cli/command'
+    require 'new_relic/cli/deployments'
 
     version = if defined? Version
       Version.current
@@ -35,7 +35,7 @@ namespace :deploy do
       `git log -1 --format=%h`.chomp # abbreviated hash of latest git commit
     end
 
-    NewRelic::Command::Deployments.new :revision => version
+    NewRelic::Cli::Deployments.new(revision: version).run
   end
 
   desc 'Trigger a Passenger restart'
