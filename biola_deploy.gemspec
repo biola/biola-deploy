@@ -13,4 +13,5 @@ spec = Gem::Specification.new do |s|
   s.author = 'Adam Crownoble'
   s.email = 'adam.crownoble@biola.edu'
   s.homepage = 'https://github.com/biola/biola-deploy'
+  s.license = 'MIT'
 end
