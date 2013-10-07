@@ -1,62 +1,81 @@
 require 'fileutils'
-require 'uri'
 
 namespace :deploy do
   desc 'Run the database migrations'
-  task :migrate_db => :environment do
-    puts 'migrating the database...'
-    Rake::Task['db:migrate'].invoke
+  task :migrate_db do
+    if_rails_loads 'database migration' do
+      Rake::Task['db:migrate'].invoke
+    end
   end
 
   desc 'Reindex Solr if it exists'
   task :reindex_solr do
-    if Rake::Task.task_defined? 'sunspot:reindex'
-      puts 'reindexing Solr...'
+    if_rails_loads 'Solr reindex' do
       Rake::Task['sunspot:reindex'].invoke
     end
   end
 
   desc 'Precompile the asset pipeline in Rails apps 3.1 and above'
   task :precompile_assets do
-    if Rake::Task.task_defined? 'assets:precompile'
-      puts 'precompiling assets...'
+    if_rails_loads 'asset precompile' do
       Rake::Task['assets:precompile'].invoke
     end
   end
 
   desc 'Tell NewRelic about this deployment'
-  task :tell_newrelic => :environment do
-    require 'new_relic/cli/command'
-    require 'new_relic/cli/deployments'
+  task :tell_newrelic do
+    if_rails_loads 'NewRelic deployment' do
+      # TODO: check for NewRelic
+      require 'new_relic/cli/command'
+      require 'new_relic/cli/deployments'
 
-    version = if defined? Version
-      Version.current
-    else
-      `git log -1 --format=%h`.chomp # abbreviated hash of latest git commit
+      version = if defined? Version
+        Version.current
+      else
+        `git log -1 --format=%h`.chomp # abbreviated hash of latest git commit
+      end
+
+      NewRelic::Cli::Deployments.new(revision: version).run
     end
-
-    NewRelic::Cli::Deployments.new(revision: version).run
   end
 
-  desc 'Trigger a Passenger restart'
-  task :restart_app => :environment do
-    restart_file = 'tmp/restart.txt'
+  desc 'Trigger an application restart'
+  task :restart_app do
+    if_rails_loads 'application restart' do
+      restart_file = 'tmp/restart.txt'
 
-    puts 'restarting the app...'
-    Dir.chdir(app_dir) do
-      make_globally_writable restart_file if File.exists? restart_file
-      FileUtils.touch restart_file
+      Dir.chdir(app_dir) do
+        if File.exists? restart_file
+          FileUtils.touch restart_file
+        end
+      end
     end
   end
 
   private
 
-  def app_dir
-    Rails.root.to_s
+  # If this is a first run and there is no database.yml (for instance)
+  # this will return false
+  def if_rails_loads(task_description, &block)
+    error = nil
+
+    unless defined?(Rails) && Rails.initialized?
+      begin
+        load 'config/environment.rb'
+      rescue LoadError, RuntimeError => e
+        error = e.message
+      end
+    end
+
+    if error
+      puts "Skipping #{task_description} because: #{error}"
+    else
+      puts "Running #{task_description}"
+      block.call
+    end
   end
 
-  def make_globally_writable(file)
-    permissions = File.directory?(file) ? 777 : 666
-    system "sudo chmod #{permissions} #{file}"
+  def app_dir
+    Rails.root.to_s
   end
 end
