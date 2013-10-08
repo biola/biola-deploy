@@ -25,17 +25,20 @@ namespace :deploy do
   desc 'Tell NewRelic about this deployment'
   task :tell_newrelic do
     if_rails_loads 'NewRelic deployment' do
-      # TODO: check for NewRelic
-      require 'new_relic/cli/command'
-      require 'new_relic/cli/deployments'
+      if Rails.env.production?
+        require 'new_relic/cli/command'
+        require 'new_relic/cli/deployments'
 
-      version = if defined? Version
-        Version.current
+        version = if defined? Version
+          Version.current
+        else
+          `git log -1 --format=%h`.chomp # abbreviated hash of latest git commit
+        end
+
+        NewRelic::Cli::Deployments.new(revision: version).run
       else
-        `git log -1 --format=%h`.chomp # abbreviated hash of latest git commit
+        puts 'Canceling NewRelic deployment because: not production environment'
       end
-
-      NewRelic::Cli::Deployments.new(revision: version).run
     end
   end
 
