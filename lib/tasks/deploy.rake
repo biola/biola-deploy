@@ -45,11 +45,10 @@ namespace :deploy do
   desc 'Trigger an application restart'
   task :restart_app do
     if_rails_loads 'application restart' do
-      restart_file = 'tmp/restart.txt'
 
       Dir.chdir(app_dir) do
-        if File.exists? restart_file
-          FileUtils.touch restart_file
+        if Dir.exists? 'tmp'
+          FileUtils.touch 'tmp/restart.txt'
         end
       end
     end
