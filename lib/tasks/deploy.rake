@@ -61,12 +61,12 @@ namespace :deploy do
   def if_rails_loads(task_description, &block)
     error = nil
 
-    unless (defined?(Rails) && Rails.initialized? rescue false)
-      begin
+    begin
+      unless Rails.initialized?
         Rake::Task['environment'].invoke
-      rescue LoadError, RuntimeError, SystemCallError => e
-        error = e.message
       end
+    rescue Exception => e
+      error = e.message
     end
 
     if error
