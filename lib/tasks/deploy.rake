@@ -64,7 +64,7 @@ namespace :deploy do
     unless (defined?(Rails) && Rails.initialized? rescue false)
       begin
         Rake::Task['environment'].invoke
-      rescue LoadError, RuntimeError => e
+      rescue LoadError, RuntimeError, SystemCallError => e
         error = e.message
       end
     end
