@@ -8,6 +8,13 @@ namespace :deploy do
     end
   end
 
+  desc 'Seed the database'
+  task :seed_db do
+    if_rails_loads 'database seed' do
+      Rake::Task['db:seed'].invoke
+    end
+  end
+
   desc 'Reindex Solr if it exists'
   task :reindex_solr do
     if_rails_loads 'Solr reindex' do
