@@ -69,9 +69,7 @@ namespace :deploy do
     error = nil
 
     begin
-      unless Rails.initialized?
-        Rake::Task['environment'].invoke
-      end
+      Rake::Task['environment'].invoke
     rescue Exception => e
       error = e.message
     end
