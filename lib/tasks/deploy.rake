@@ -4,6 +4,7 @@ namespace :deploy do
   desc 'Run the database migrations'
   task :migrate_db do
     if_rails_loads 'database migration' do
+      require 'active_record'
       Rake::Task['db:migrate'].invoke
     end
   end
@@ -11,6 +12,7 @@ namespace :deploy do
   desc 'Seed the database'
   task :seed_db do
     if_rails_loads 'database seed' do
+      require 'active_record'
       Rake::Task['db:seed'].invoke
     end
   end
