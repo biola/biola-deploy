@@ -36,7 +36,7 @@ namespace :deploy do
     if_rails_loads 'NewRelic deployment' do
       if Rails.env.production?
         require 'new_relic/cli/command'
-        require 'new_relic/cli/deployments'
+        require 'new_relic/cli/commands/deployments'
 
         version = if defined? Version
           Version.current
