@@ -38,13 +38,17 @@ namespace :deploy do
         require 'new_relic/cli/command'
         require 'new_relic/cli/commands/deployments'
 
-        version = if defined? Version
-          Version.current
-        else
-          `git log -1 --format=%h`.chomp # abbreviated hash of latest git commit
-        end
+        if NewRelic::Agent.config[:license_key].present?
+          version = if defined? Version
+            Version.current
+          else
+            `git log -1 --format=%h`.chomp # abbreviated hash of latest git commit
+          end
 
-        NewRelic::Cli::Deployments.new(revision: version).run
+          NewRelic::Cli::Deployments.new(revision: version).run
+        else
+          puts 'Canceling NewRelic deployment because: no license key set'
+        end
       else
         puts 'Canceling NewRelic deployment because: not production environment'
       end
