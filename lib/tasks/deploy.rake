@@ -1,6 +1,28 @@
 require 'fileutils'
 
 namespace :deploy do
+  desc 'Run chef-client'
+  task :chef_client do
+    require 'open3'
+
+    cmd = 'sudo --non-interactive chef-client'
+
+    error_out = []
+    Open3.popen3(cmd) do |stdin, stdout, stderr, wait_thr|
+      while line = stdout.gets
+        puts line
+      end
+
+      while line = stderr.gets
+        error_out << line
+      end
+    end
+
+    if error_out.any?
+      puts %[Erorr when running chef-client: #{error_out.join("\n")}]
+    end
+  end
+
   desc 'Run the database migrations'
   task :migrate_db do
     if_rails_loads 'database migration' do
