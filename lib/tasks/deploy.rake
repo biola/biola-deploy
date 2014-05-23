@@ -5,7 +5,8 @@ namespace :deploy do
   task :chef_client do
     require 'open3'
 
-    cmd = 'sudo --non-interactive chef-client'
+    # -n for non-interactive
+    cmd = 'sudo -n chef-client'
 
     error_out = []
     Open3.popen3(cmd) do |stdin, stdout, stderr, wait_thr|
