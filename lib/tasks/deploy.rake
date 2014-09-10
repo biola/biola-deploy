@@ -20,7 +20,7 @@ namespace :deploy do
     end
 
     if error_out.any?
-      puts %[Erorr when running chef-client: #{error_out.join("\n")}]
+      puts %[Error when running chef-client: #{error_out.join("\n")}]
     end
   end
 
