@@ -3,6 +3,8 @@ require 'fileutils'
 namespace :deploy do
   desc 'Run chef-client'
   task :chef_client do
+    # This is not needed with chef 12 systems
+    next unless File.exist?('/opt/chef/bin/shef')
     require 'open3'
 
     # -n for non-interactive
